@@ -3,8 +3,12 @@ import { AnimalsList } from "../models/AnimalsList.js";
 
 const animalsList = new AnimalsList();
 
-const verifyImage = (url) => {
-    url.match(/\.(jpeg|jpg|gif|png)$/)
+function verifyImage(url) {
+    var extensoesPermitidas = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
+
+    var extensao = url.split('.').pop().toLowerCase();
+
+    return extensoesPermitidas.includes(extensao);
 }
 
 export const getAllAnimals = async (req, res) => {
@@ -47,58 +51,56 @@ export const createAnimal = async (req, res) => {
 
     const animal = new Animal(name, type, age, color, image, vaccinated);
 
-    animalsList.addAnimal(animal);
+    let numerosErros = 0;
+    let erros = [];
 
-    if (!animal.name || !animal.type || !animal.age || !animal.color || !animal.image ) {
-        return res.status(400).send({
-            message: "Dados inválidos!",
-            status: "BAD REQUEST"
-        });
+
+
+    if (!animal.name || !animal.type || !animal.age || !animal.color || !animal.image) {
+        numerosErros++;
+        erros.push("Todos os campos são obrigatórios!");
     }
 
     if (animal.name.length < 3 || animal.name.length > 50) {
-        return res.status(400).send({
-            message: "O nome do animal deve ter entre 3 e 50 caracteres!",
-            status: "BAD REQUEST"
-        });
+        numerosErros++;
+        erros.push("O nome do animal deve ter entre 3 e 50 caracteres!");
     }
 
     if (!Number.isInteger(animal.age)) {
-        return res.status(400).send({
-            message: "A idade do animal deve ser um número inteiro!",
-            status: "BAD REQUEST"
-        });
+        numerosErros++;
+        erros.push("A idade do animal deve ser um número inteiro!");
     }
 
     if (animal.type.length > 30) {
-        return res.status(400).send({
-            message: "O tipo do animal deve ter até 30 caracteres!",
-            status: "BAD REQUEST"
-        });
+        numerosErros++;
+        erros.push("O tipo do animal deve ter até 30 caracteres!");
     }
 
     if (animal.color.length > 20) {
-        return res.status(400).send({
-            message: "A cor do animal deve ter até 20 caracteres!",
-            status: "BAD REQUEST"
-        });
+        numerosErros++;
+        erros.push("A cor do animal deve ter até 20 caracteres!");
     }
 
-    if (verifyImage(animal.image)) {
-        return res.status(400).send({
-            message: "Insira um URL válido!",
-            status: "BAD REQUEST"
-        });
+    if (verifyImage(animal.image) == false) {
+        numerosErros++;
+        erros.push("A imagem deve ser uma URL válida!");
     }
 
     if (animal.vaccinated !== true && animal.vaccinated !== false) {
-        return res.status(400).send({
-            message: "O campo vaccinated deve ser um booleano (true ou false)!",
-            status: "BAD REQUEST"
-        });
+        numerosErros++;
+        erros.push("O campo vaccinated deve ser um booleano (true ou false)!");
     }
 
-    return res.status(201).send(animal);
+    if (numerosErros > 0) {
+        return res.status(400).send({
+            errors: erros,
+            status: "BAD REQUEST"
+        });
+    } else {
+        animalsList.addAnimal(animal);
+        return res.status(201).send(animal);
+    }
+
 }
 
 export const updateAnimal = async (req, res) => {

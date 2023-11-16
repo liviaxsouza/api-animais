@@ -12,7 +12,7 @@ export class AnimalsList {
     }
 
     getAnimalByType(type) {
-        return this.animals.filter((animal) => animal.type === type);
+        return this.animals.filter((animal) => animal.type.toLowerCase() === type.toLowerCase());
     }
 
     addAnimal(animal) {
