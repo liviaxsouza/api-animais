@@ -4,11 +4,11 @@ import { AnimalsList } from "../models/AnimalsList.js";
 const animalsList = new AnimalsList();
 
 function verifyImage(url) {
-    var extensoesPermitidas = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
+    var allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
 
-    var extensao = url.split('.').pop().toLowerCase();
+    var extension = url.split('.').pop().toLowerCase();
 
-    return extensoesPermitidas.includes(extensao);
+    return allowedExtensions.includes(extension);
 }
 
 export const getAllAnimals = async (req, res) => {
@@ -54,8 +54,6 @@ export const createAnimal = async (req, res) => {
     let numerosErros = 0;
     let erros = [];
 
-
-
     if (!animal.name || !animal.type || !animal.age || !animal.color || !animal.image) {
         numerosErros++;
         erros.push("Todos os campos são obrigatórios!");
@@ -100,7 +98,6 @@ export const createAnimal = async (req, res) => {
         animalsList.addAnimal(animal);
         return res.status(201).send(animal);
     }
-
 }
 
 export const updateAnimal = async (req, res) => {
