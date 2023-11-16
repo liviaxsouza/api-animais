@@ -8,11 +8,9 @@ const verifyImage = (url) => {
 }
 
 export const getAllAnimals = async (req, res) => {
-    const animals = animalsList.getAnimals();
+    let animals = animalsList.getAnimals();
 
     const type = req.query.type;
-
-    console.log(type)
 
     if (type) {
         animals = animalsList.getAnimalByType(type);
@@ -51,7 +49,7 @@ export const createAnimal = async (req, res) => {
 
     animalsList.addAnimal(animal);
 
-    if (!animal.name || !animal.type || !animal.age || !animal.color || !animal.image || !animal.vaccinated) {
+    if (!animal.name || !animal.type || !animal.age || !animal.color || !animal.image ) {
         return res.status(400).send({
             message: "Dados inválidos!",
             status: "BAD REQUEST"
